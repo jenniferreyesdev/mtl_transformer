@@ -1,0 +1,12 @@
+{
+  "os": "macOS-13.4-arm64-arm-64bit",
+  "python": "3.11.5",
+  "startedAt": "2024-11-08T02:21:12.334158Z",
+  "program": "/Users/reyestech/Desktop/MultiTask/multitaskTransformer.py",
+  "codePath": "multitaskTransformer.py",
+  "root": "/Users/reyestech/Desktop/MultiTask",
+  "host": "Reyess-MacBook-Pro-2.local",
+  "username": "reyestech",
+  "executable": "/Users/reyestech/Desktop/TradingSystems/tradingenv/bin/python3",
+  "codePathLocal": "multitaskTransformer.py"
+}

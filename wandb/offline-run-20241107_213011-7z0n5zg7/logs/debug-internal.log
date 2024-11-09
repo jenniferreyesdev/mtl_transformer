@@ -1,0 +1,8 @@
+{"time":"2024-11-07T21:30:11.322307-06:00","level":"INFO","msg":"using version","core version":"0.18.6"}
+{"time":"2024-11-07T21:30:11.322356-06:00","level":"INFO","msg":"created symlink","path":"/Users/reyestech/Desktop/MultiTask/wandb/offline-run-20241107_213011-7z0n5zg7/logs/debug-core.log"}
+{"time":"2024-11-07T21:30:11.429484-06:00","level":"INFO","msg":"created new stream","id":"7z0n5zg7"}
+{"time":"2024-11-07T21:30:11.429526-06:00","level":"INFO","msg":"stream: started","id":"7z0n5zg7"}
+{"time":"2024-11-07T21:30:11.429546-06:00","level":"INFO","msg":"sender: started","stream_id":"7z0n5zg7"}
+{"time":"2024-11-07T21:30:11.429534-06:00","level":"INFO","msg":"handler: started","stream_id":{"value":"7z0n5zg7"}}
+{"time":"2024-11-07T21:30:11.429685-06:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"7z0n5zg7"}}
+{"time":"2024-11-07T21:30:11.433511-06:00","level":"INFO","msg":"Starting system monitor"}

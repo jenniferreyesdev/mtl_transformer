@@ -1,0 +1,15 @@
+{"time":"2024-11-07T20:33:19.30599-06:00","level":"INFO","msg":"using version","core version":"0.18.6"}
+{"time":"2024-11-07T20:33:19.306065-06:00","level":"INFO","msg":"created symlink","path":"/Users/reyestech/Desktop/MultiTask/wandb/offline-run-20241107_203319-lytssfka/logs/debug-core.log"}
+{"time":"2024-11-07T20:33:19.417717-06:00","level":"INFO","msg":"created new stream","id":"lytssfka"}
+{"time":"2024-11-07T20:33:19.417774-06:00","level":"INFO","msg":"stream: started","id":"lytssfka"}
+{"time":"2024-11-07T20:33:19.417953-06:00","level":"INFO","msg":"sender: started","stream_id":"lytssfka"}
+{"time":"2024-11-07T20:33:19.417931-06:00","level":"INFO","msg":"handler: started","stream_id":{"value":"lytssfka"}}
+{"time":"2024-11-07T20:33:19.417946-06:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"lytssfka"}}
+{"time":"2024-11-07T20:33:19.421974-06:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-11-07T20:41:10.198748-06:00","level":"INFO","msg":"stream: closing","id":"lytssfka"}
+{"time":"2024-11-07T20:41:10.19909-06:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2024-11-07T20:41:10.199444-06:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2024-11-07T20:41:10.199905-06:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"lytssfka"}}
+{"time":"2024-11-07T20:41:10.199927-06:00","level":"INFO","msg":"sender: closed","stream_id":"lytssfka"}
+{"time":"2024-11-07T20:41:10.199922-06:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"lytssfka"}}
+{"time":"2024-11-07T20:41:10.199987-06:00","level":"INFO","msg":"stream: closed","id":"lytssfka"}

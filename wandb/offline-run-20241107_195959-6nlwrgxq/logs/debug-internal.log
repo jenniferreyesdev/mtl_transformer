@@ -1,0 +1,15 @@
+{"time":"2024-11-07T19:59:59.089343-06:00","level":"INFO","msg":"using version","core version":"0.18.6"}
+{"time":"2024-11-07T19:59:59.08942-06:00","level":"INFO","msg":"created symlink","path":"/Users/reyestech/Desktop/MultiTask/wandb/offline-run-20241107_195959-6nlwrgxq/logs/debug-core.log"}
+{"time":"2024-11-07T19:59:59.198813-06:00","level":"INFO","msg":"created new stream","id":"6nlwrgxq"}
+{"time":"2024-11-07T19:59:59.198853-06:00","level":"INFO","msg":"stream: started","id":"6nlwrgxq"}
+{"time":"2024-11-07T19:59:59.198871-06:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"6nlwrgxq"}}
+{"time":"2024-11-07T19:59:59.198957-06:00","level":"INFO","msg":"sender: started","stream_id":"6nlwrgxq"}
+{"time":"2024-11-07T19:59:59.198881-06:00","level":"INFO","msg":"handler: started","stream_id":{"value":"6nlwrgxq"}}
+{"time":"2024-11-07T19:59:59.202009-06:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-11-07T19:59:59.324317-06:00","level":"INFO","msg":"stream: closing","id":"6nlwrgxq"}
+{"time":"2024-11-07T19:59:59.324362-06:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2024-11-07T19:59:59.324721-06:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2024-11-07T19:59:59.324896-06:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"6nlwrgxq"}}
+{"time":"2024-11-07T19:59:59.324909-06:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"6nlwrgxq"}}
+{"time":"2024-11-07T19:59:59.324911-06:00","level":"INFO","msg":"sender: closed","stream_id":"6nlwrgxq"}
+{"time":"2024-11-07T19:59:59.325001-06:00","level":"INFO","msg":"stream: closed","id":"6nlwrgxq"}

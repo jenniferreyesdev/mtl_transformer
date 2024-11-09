@@ -1,0 +1,15 @@
+{"time":"2024-11-07T21:17:06.472581-06:00","level":"INFO","msg":"using version","core version":"0.18.6"}
+{"time":"2024-11-07T21:17:06.472655-06:00","level":"INFO","msg":"created symlink","path":"/Users/reyestech/Desktop/MultiTask/wandb/offline-run-20241107_211706-tqjboosc/logs/debug-core.log"}
+{"time":"2024-11-07T21:17:06.582408-06:00","level":"INFO","msg":"created new stream","id":"tqjboosc"}
+{"time":"2024-11-07T21:17:06.582443-06:00","level":"INFO","msg":"stream: started","id":"tqjboosc"}
+{"time":"2024-11-07T21:17:06.582461-06:00","level":"INFO","msg":"sender: started","stream_id":"tqjboosc"}
+{"time":"2024-11-07T21:17:06.582489-06:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"tqjboosc"}}
+{"time":"2024-11-07T21:17:06.582456-06:00","level":"INFO","msg":"handler: started","stream_id":{"value":"tqjboosc"}}
+{"time":"2024-11-07T21:17:06.585751-06:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2024-11-07T21:24:54.022894-06:00","level":"INFO","msg":"stream: closing","id":"tqjboosc"}
+{"time":"2024-11-07T21:24:54.02293-06:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2024-11-07T21:24:54.023516-06:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2024-11-07T21:24:54.02374-06:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"tqjboosc"}}
+{"time":"2024-11-07T21:24:54.023756-06:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"tqjboosc"}}
+{"time":"2024-11-07T21:24:54.023764-06:00","level":"INFO","msg":"sender: closed","stream_id":"tqjboosc"}
+{"time":"2024-11-07T21:24:54.023817-06:00","level":"INFO","msg":"stream: closed","id":"tqjboosc"}
