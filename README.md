@@ -3,7 +3,7 @@
 ## Quick Start with Docker
 
 ```bash
-# Build the CPU image
+# Build the image
 docker build -t mtl_transformer .
 
 # Run the container
