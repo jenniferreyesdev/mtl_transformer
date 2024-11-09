@@ -1,19 +1,39 @@
-# Dockerfile
-FROM pytorch/pytorch:2.1.0-cuda11.8-cudnn8-runtime
+# Use bullseye slim as base image for better compatibility
+FROM python:3.11.5-slim-bullseye AS builder
 
+# Set working directory
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    git \
-    && rm -rf /var/lib/apt/lists/*
+# Install build dependencies and pip tools in a single layer
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/* \
+    && python -m venv /opt/venv \
+    && /opt/venv/bin/pip install -U pip setuptools wheel
 
-# Copy requirements and install Python dependencies
+# Copy only requirements first to leverage Docker cache
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy source code
+# Install dependencies
+ENV PATH="/opt/venv/bin:$PATH"
+RUN pip install -r requirements.txt
+
+# Final stage
+FROM python:3.11.5-slim-bullseye
+
+# Set working directory
+WORKDIR /app
+
+# Copy virtual environment from builder stage
+COPY --from=builder /opt/venv /opt/venv
+
+# Set environment variables
+ENV PATH="/opt/venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1
+
+# Copy only the necessary source code
 COPY . .
 
-# Command to run the training
+# Default command
 CMD ["python", "train.py"]
