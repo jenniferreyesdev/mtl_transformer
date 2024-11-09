@@ -1,5 +1,15 @@
 # Multi-Task Transformer Architecture and Training Strategy
 
+## Quick Start with Docker
+
+```bash
+# Build the CPU image
+docker build -t mtl_transformer .
+
+# Run the container
+docker run mtl_transformer
+```
+
 ## 1. Sentence Transformer Architecture Decisions
 
 The `SentenceTransformer` class implements several key architectural choices beyond the transformer backbone:
