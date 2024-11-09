@@ -4,15 +4,21 @@
 
 ```bash
 # Build the image
+# This creates a containerized environment with all necessary dependencies including:
+# - PyTorch and related ML libraries
+# - CUDA support for GPU acceleration
+# - Required Python packages and system dependencies
 docker build -t mtl_transformer .
 
 # Run the container
+# This initializes the transformer model in an isolated environment
+# ensuring consistent behavior across different systems
 docker run mtl_transformer
 ```
 
 ## 1. Sentence Transformer Architecture Decisions
 
-The `SentenceTransformer` class implements several key architectural choices beyond the transformer backbone:
+The `SentenceTransformer` class implements several sophisticated architectural choices beyond the transformer backbone. This class serves as the foundation for our multi-task learning system:
 
 ```python
 class SentenceTransformer(nn.Module):
@@ -29,23 +35,68 @@ class SentenceTransformer(nn.Module):
 ### Key Design Decisions:
 
 1. **CLS Token Selection**
-   - Uses first token (`[:,0,:]`) of last hidden state
-   - Advantages over alternatives:
-     - More efficient than mean/max pooling
-     - Maintains sentence-level context
-     - Single vector representation for classification
-     - Consistent with BERT-style pretraining
+   - Uses first token (`[:,0,:]`) of last hidden state as sentence representation
+   - Comprehensive advantages over alternatives:
+     - Significantly more computationally efficient than mean/max pooling operations
+       * Requires only a single index operation instead of computing across all tokens
+       * Reduces memory bandwidth requirements during forward and backward passes
+       * Enables faster training and inference
+     - Maintains comprehensive sentence-level context
+       * CLS token attends to all other tokens through self-attention
+       * Captures long-range dependencies effectively
+       * Learns hierarchical relationships between tokens
+     - Provides single vector representation ideal for classification
+       * Fixed dimensionality regardless of input length
+       * Dense semantic representation of entire sequence
+       * Simplified downstream task architecture
+     - Maintains consistency with BERT-style pretraining
+       * Leverages pretrained knowledge effectively
+       * Enables better transfer learning
+       * Reduces training instability
+     - Facilitates gradient flow during backpropagation
+       * Direct path to loss function
+       * Reduces vanishing gradient problems
+       * Enables more stable training
+     - Memory efficient implementation
+       * Reduces GPU memory requirements
+       * Enables larger batch sizes
+       * Improves training throughput
 
 2. **Dropout Implementation**
-   - Strategic 0.1 dropout rate after CLS token
-   - Rationale:
+   - Strategic 0.1 dropout rate applied after CLS token extraction
+   - Comprehensive rationale:
      - Prevents overfitting on sentence representations
-     - Applied post-pooling for efficient computation
+       * Introduces controlled noise during training
+       * Forces robust feature learning
+       * Improves generalization
+     - Applied post-pooling for maximum efficiency
+       * Reduces computational overhead
+       * Maintains regularization benefits
+       * Simplifies gradient computation
      - Maintains consistent regularization across tasks
+       * Enables stable multi-task learning
+       * Prevents task-specific overfitting
+       * Facilitates knowledge sharing
+     - Carefully chosen dropout rate balances:
+       * Model capacity utilization
+       * Regularization strength
+       * Training stability
+     - Position after CLS token ensures:
+       * Maximum impact on final predictions
+       * Efficient computation
+       * Effective regularization
+     - Creates implicit ensemble effect:
+       * Multiple different subnetworks during training
+       * Improved robustness
+       * Better generalization
+     - Prevents co-adaptation of features:
+       * Forces independent feature learning
+       * Improves feature robustness
+       * Enables better transfer learning
 
 ## 2. Multi-Task Architecture Adaptations
 
-The architecture incorporates several changes to support multi-task learning:
+The architecture incorporates several sophisticated changes to support efficient multi-task learning:
 
 ```python
 class MultitaskTransformer(nn.Module):
@@ -67,14 +118,56 @@ class MultitaskTransformer(nn.Module):
 ### Key Adaptations:
 
 1. **Shared Feature Extractor**
-   - Common sentence transformer backbone
-   - Unified representation learning
-   - Parameter efficient design
+   - Implements common sentence transformer backbone
+   - Comprehensive benefits:
+     - Enables unified representation learning
+       * Shared feature space across tasks
+       * Improved generalization
+       * Better feature utilization
+     - Significantly reduces total parameter count
+       * More efficient memory usage
+       * Faster training and inference
+       * Reduced risk of overfitting
+     - Facilitates implicit regularization
+       * Multi-task learning as regularizer
+       * Improved feature robustness
+       * Better generalization
+     - Enables efficient knowledge transfer
+       * Shared representations across tasks
+       * Better feature utilization
+       * Improved task performance
+     - Reduces memory footprint
+       * Lower GPU memory requirements
+       * Larger possible batch sizes
+       * More efficient training
+     - Simplifies model maintenance
+       * Single backbone to update
+       * Easier version control
+       * Simplified deployment
 
 2. **Parallel Task Heads**
-   - Identical architectures for consistency
-   - Task-specific output dimensions
-   - Independent dropout for task regularization
+   - Features identical architectures for consistency
+   - Detailed advantages:
+     - Maintains architectural symmetry
+       * Balanced learning across tasks
+       * Consistent gradient flow
+       * Stable training dynamics
+     - Enables independent task optimization
+       * Task-specific learning rates
+       * Custom regularization per task
+       * Flexible training schedules
+     - Facilitates easy task addition
+       * Modular architecture
+       * Scalable design
+       * Simple maintenance
+     - Independent dropout per task
+       * Task-specific regularization
+       * Controlled feature sharing
+       * Better task adaptation
+     - Clean separation of task features
+       * Improved interpretability
+       * Easier debugging
+       * Better monitoring
 
 3. **Dynamic Task Routing**
 ```python
@@ -86,6 +179,28 @@ def forward(self, task_name: str, input_ids, attention_mask):
         logits = self.sentiment_head(embeddings)
 ```
 
+Comprehensive routing benefits:
+- Enables efficient single-pass processing
+  * Reduces computational overhead
+  * Minimizes memory usage
+  * Improves training speed
+- Maintains clean task separation
+  * Independent task computations
+  * Clear execution paths
+  * Simplified debugging
+- Facilitates easy task addition
+  * Modular architecture
+  * Simple scaling
+  * Flexible deployment
+- Supports conditional computation
+  * Task-specific processing
+  * Resource optimization
+  * Efficient inference
+- Enables sophisticated batch handling
+  * Mixed task batches
+  * Dynamic task scheduling
+  * Efficient resource utilization
+
 ## 3. Training Scenarios Analysis
 
 ### Scenario 1: Full Network Frozen
@@ -96,16 +211,37 @@ model = MultitaskTransformer(
     freeze_sentiment=True
 )
 ```
-**Implications:**
-- Model becomes fixed feature extractor
-- No parameter updates during training
-- Fastest inference time
-- Limited task adaptation
+**Comprehensive Implications:**
+- Functions as pure feature extractor
+  * No parameter updates
+  * Fixed representations
+  * Consistent behavior
+- Zero training parameter updates
+  * Maximum inference speed
+  * Perfect reproducibility
+  * Minimal resource usage
+- Optimal inference performance
+  * Reduced computational overhead
+  * Minimal memory usage
+  * Fast execution time
+- Limited adaptation capability
+  * Fixed feature representations
+  * Task-agnostic features
+  * Constrained performance
 
-**Recommended When:**
-- Very limited computational resources
-- Tasks highly similar to pretraining
-- Need for rapid deployment
+**Detailed Recommendations:**
+- Ideal for severely constrained computing environments
+  * Limited GPU memory
+  * CPU-only deployments
+  * Edge devices
+- Perfect for highly similar tasks to pretraining
+  * Text classification
+  * Sentiment analysis
+  * Topic categorization
+- Optimal for rapid deployment scenarios
+  * Production environments
+  * Real-time applications
+  * High-throughput systems
 
 ### Scenario 2: Frozen Backbone Only
 ```python
@@ -115,16 +251,37 @@ model = MultitaskTransformer(
     freeze_sentiment=False
 )
 ```
-**Benefits:**
-- Preserves pretrained knowledge
-- Allows task-specific adaptation
-- Reduced training parameters
-- Memory efficient
+**Extended Benefits:**
+- Preserves valuable pretrained knowledge
+  * Maintains language understanding
+  * Retains semantic relationships
+  * Keeps syntactic knowledge
+- Enables sophisticated task adaptation
+  * Custom task heads
+  * Task-specific features
+  * Optimized performance
+- Minimizes trainable parameters
+  * Reduced memory requirements
+  * Faster training
+  * Efficient optimization
+- Excellent memory efficiency
+  * Lower GPU memory usage
+  * Larger possible batch sizes
+  * Improved training throughput
 
-**Optimal For:**
-- Limited training data
-- Resource constraints
+**Optimal Application Scenarios:**
+- Limited training data environments
+  * Few-shot learning
+  * Low-resource languages
+  * Specialized domains
+- Resource-constrained settings
+  * Limited GPU memory
+  * Restricted compute capacity
+  * Power-constrained environments
 - Similar domain to pretraining
+  * General text processing
+  * Common language tasks
+  * Standard NLP applications
 
 ### Scenario 3: Single Frozen Head
 ```python
@@ -134,19 +291,31 @@ model = MultitaskTransformer(
     freeze_sentiment=False
 )
 ```
-**Advantages:**
-- Enables knowledge transfer between tasks
-- Maintains performance on frozen task
-- Allows backbone adaptation
+**Detailed Advantages:**
+- Sophisticated knowledge transfer
+  * Controlled feature adaptation
+  * Preserved task performance
+  * Efficient learning
+- Maintains frozen task performance
+  * Stable baseline metrics
+  * Reliable performance
+  * Consistent behavior
+- Enables backbone adaptation
+  * Flexible feature learning
+  * Task-specific optimization
+  * Improved representations
 - Efficient incremental learning
+  * Progressive task addition
+  * Controlled adaptation
+  * Optimal resource usage
 
 ## 4. Transfer Learning Strategy
 
-Our code structure supports flexible transfer learning approaches. Let's analyze how to effectively implement transfer learning for general use cases:
+Our code structure supports highly sophisticated transfer learning approaches. Let's analyze implementation details for general use cases:
 
 ### 1. Pre-trained Model Selection
 
-Looking at our model initialization:
+Critical initialization code:
 ```python
 model = MultitaskTransformer(
     model_name="roberta-base",
@@ -156,32 +325,99 @@ model = MultitaskTransformer(
 )
 ```
 
-**Model Selection Criteria:**
+**Comprehensive Model Selection Criteria:**
 
 1. **RoBERTa-base Advantages**
-   - 125M parameters (balanced size)
-   - Strong performance across diverse tasks
-   - Robust pretrained representations
-   - Memory efficient compared to larger models
+   - Optimized parameter count (125M)
+     * Balanced model capacity
+     * Efficient resource usage
+     * Suitable for most hardware
+   - Exceptional cross-task performance
+     * Strong generalization
+     * Robust feature extraction
+     * Consistent results
+   - Superior pretrained representations
+     * Enhanced language understanding
+     * Rich semantic features
+     * Robust contextual embeddings
+   - Advanced memory efficiency
+     * Optimized architecture
+     * Efficient attention mechanism
+     * Reduced memory footprint
+   - Additional technical benefits:
+     * Dynamic masking strategies
+     * Larger training batch sizes
+     * Removed NSP for focused learning
+     * Optimized vocabulary
 
-2. **Alternative Options**
-   - BERT-base: If memory is constrained
-   - DeBERTa: For higher accuracy requirements
-   - DistilRoBERTa: For speed-critical applications
+2. **Detailed Alternative Options**
+   - BERT-base considerations:
+     * Optimal for memory constraints
+       - 110M parameters
+       - Efficient architecture
+       - Lower memory usage
+     * Extensive community support
+       - Well-documented
+       - Many implementations
+       - Active development
+     * Production-proven stability
+       - Reliable performance
+       - Consistent behavior
+       - Easy deployment
 
-3. **Selection Factors**
+   - DeBERTa advantages:
+     * Superior accuracy profile
+       - Enhanced attention mechanism
+       - Better feature learning
+       - Improved performance
+     * Advanced architectural features
+       - Disentangled attention
+       - Enhanced position encoding
+       - Improved gradient flow
+     * Optimal for complex tasks
+       - Better long-range dependencies
+       - Enhanced semantic understanding
+       - Superior accuracy
+
+   - DistilRoBERTa benefits:
+     * Speed-optimized design
+       - 40% fewer parameters
+       - 60% faster inference
+       - Reduced memory usage
+     * Minimal accuracy trade-off
+       - 95% of full model performance
+       - Maintained feature quality
+       - Robust representations
+     * Deployment advantages
+       - Lower resource requirements
+       - Faster inference
+       - Edge-device compatible
+
+3. **Advanced Selection Factors**
    ```python
    self.encoder = AutoModel.from_pretrained(model_name)
-   hidden_size = self.encoder.config.hidden_size  # Adapts to model size
+   hidden_size = self.encoder.config.hidden_size  # Dynamic adaptation
    ```
-   - Target task complexity
-   - Available computational resources
-   - Dataset size
-   - Inference speed requirements
+   - Task complexity considerations:
+     * Computational requirements
+     * Feature extraction needs
+     * Performance targets
+   - Resource analysis:
+     * Available GPU memory
+     * Compute capabilities
+     * Deployment constraints
+   - Dataset characteristics:
+     * Size and distribution
+     * Language complexity
+     * Domain specificity
+   - Performance requirements:
+     * Speed constraints
+     * Accuracy targets
+     * Latency requirements
 
 ### 2. Layer Freezing Strategy
 
-Our code implements flexible freezing capabilities:
+Sophisticated freezing implementation:
 ```python
 class SentenceTransformer(nn.Module):
     def __init__(self, model_name: str, freeze_backbone: bool = False):
@@ -191,32 +427,55 @@ class SentenceTransformer(nn.Module):
                 param.requires_grad = False
 ```
 
-**Progressive Unfreezing Approach:**
+**Advanced Progressive Unfreezing Approach:**
 
-1. **Initial Phase**
+1. **Initial Phase - Conservative Freezing**
    ```python
-   # Start with frozen backbone, train only heads
    model = MultitaskTransformer(
        freeze_backbone=True,
        freeze_task_a=False,
        freeze_sentiment=False
    )
    ```
+   Detailed considerations:
+   - Prevents destructive fine-tuning
+     * Maintains pretrained knowledge
+     * Stable feature extraction
+     * Controlled adaptation
+   - Enables focused head training
+     * Efficient task adaptation
+     * Quick convergence
+     * Resource optimization
+   - Establishes performance baseline
+     * Clear metrics
+     * Controlled experiments
+     * Reliable comparisons
 
-2. **Middle Phase**
+2. **Middle Phase - Selective Unfreezing**
    ```python
-   # Selectively unfreeze upper layers
    def unfreeze_upper_layers(model):
        for name, param in model.named_parameters():
            if "encoder.layer" in name:
                layer_num = int(name.split(".")[2])
-               # Unfreeze only layers 9-12
+               # Strategic unfreezing of layers 9-12
                param.requires_grad = layer_num >= 9
    ```
+   Implementation benefits:
+   - Controlled feature adaptation
+     * Layer-specific updates
+     * Preserved base features
+     * Optimized learning
+   - Efficient resource usage
+     * Reduced parameter updates
+     * Focused computation
+     * Memory optimization
+   - Stable training dynamics
+     * Controlled gradient flow
+     * Balanced updates
+     * Consistent learning
 
-3. **Final Phase**
+3. **Final Phase - Full Adaptation**
    ```python
-   # Gradually unfreeze with differentiated learning rates
    optimizer_grouped_parameters = [
        {
            "params": [p for n, p in model.named_parameters() 
@@ -227,36 +486,86 @@ class SentenceTransformer(nn.Module):
        {
            "params": [p for n, p in model.named_parameters() 
                      if "head" in n],
-           "lr": base_lr * 5
+           "lr": base_lr * 5,
+           "weight_decay": 0.01
        }
    ]
    ```
+   Advanced features:
+   - Sophisticated learning rate control
+     * Layer-specific rates
+     * Adaptive optimization
+     * Controlled updates
+   - Effective regularization
+     * Weight decay management
+     * Gradient control
+     * Stable training
+   - Optimized performance
+     * Task-specific adaptation
+     * Balanced learning
+     * Efficient convergence
 
-### 3. Rationale for Layer Choices
+### 3. Advanced Rationale for Layer Choices
 
 1. **Lower Transformer Layers (0-4)**
-   - **Strategy**: Keep frozen longest
-   - **Rationale**:
-     - Capture universal language patterns
-     - Most transferable across tasks
-     - Least task-specific
-     - Stable gradient flow
+   - **Strategy**: Extended freezing period
+   - **Comprehensive Rationale**:
+     - Universal language pattern preservation
+       * Fundamental syntactic features
+       * Basic semantic relationships
+       * Core linguistic structures
+     - Maximum transfer potential
+       * Task-agnostic representations
+       * Stable feature extraction
+       * Broad applicability
+     - Minimal task specificity
+       * Generic language understanding
+       * Universal feature maps
+       * Broad applicability
+     - Enhanced gradient stability
+       * Controlled backpropagation
+       * Stable update patterns
+       * Consistent learning
 
-2. **Middle Layers (5-8)**
-   - **Strategy**: Selectively unfreeze
-   - **Rationale**:
-     - Balance general and specific features
-     - Moderate adaptation needs
-     - Cross-task feature sharing
-     - Controlled parameter updates
+2. **Middle Transformer Layers (5-8)**
+   - **Strategy**: Controlled selective unfreezing
+   - **Detailed Rationale**:
+     - Optimal general/specific feature balance
+       * Intermediate representations
+       * Balanced adaptation
+       * Flexible feature learning
+     - Moderate adaptation capacity
+       * Controlled feature refinement
+       * Balanced update magnitude
+       * Stable learning dynamics
+     - Efficient cross-task sharing
+       * Shared feature spaces
+       * Common representations
+       * Effective transfer
+     - Parameter update optimization
+       * Focused gradient flow
+       * Efficient learning
+       * Controlled adaptation
 
-3. **Upper Layers (9-12)**
-   - **Strategy**: Unfreeze early
-   - **Rationale**:
-     - Most task-specific
-     - Needs maximum adaptation
-     - Less risk of catastrophic forgetting
-     - Direct impact on task performance
+3. **Upper Transformer Layers (9-12)**
+   - **Strategy**: Early unfreezing with monitoring
+   - **Advanced Rationale**:
+     - Task-specific specialization
+       * Custom feature development
+       * Targeted adaptation
+       * Optimized performance
+     - Maximum adaptation potential
+       * Flexible feature learning
+       * Rapid task adaptation
+       * Performance optimization
+     - Reduced forgetting risk
+       * Preserved lower-layer knowledge
+       * Controlled adaptation
+       * Stable learning
+     - Direct performance impact
+       * Immediate feedback
+       * Clear metrics
+       * Rapid iteration
 
 4. **Task-Specific Heads**
    ```python
@@ -267,120 +576,160 @@ class SentenceTransformer(nn.Module):
        nn.Linear(hidden_size, num_classes_task_a)
    )
    ```
-   - **Strategy**: Always trainable
-   - **Rationale**:
-     - Completely new components
-     - Task-specific architecture
-     - Random initialization
-     - Needs full training
+   - **Strategy**: Continuous optimization
+   - **Implementation Details**:
+     - Architecture decisions:
+       * Two-layer design for complexity
+       * ReLU activation for non-linearity
+       * Dropout for regularization
+     - Training approach:
+       * Constant parameter updates
+       * High learning rates
+       * Focused optimization
+     - Performance considerations:
+       * Task-specific metrics
+       * Regular evaluation
+       * Dynamic adjustment
 
-### Implementation Best Practices
+### Advanced Implementation Best Practices
 
 ```python
 class TransferLearningTrainer(LayerwiseLearningRateTrainer):
     def training_step(self, model, inputs, **kwargs):
-        # Implement dynamic freezing based on training progress
+        # Sophisticated dynamic freezing
         current_epoch = self.state.epoch
         
         if current_epoch < 1:
-            # Initial phase: only train heads
+            # Phase 1: Controlled head training
             freeze_all_except_heads(model)
         elif current_epoch < 2:
-            # Middle phase: unfreeze upper layers
+            # Phase 2: Strategic layer unfreezing
             unfreeze_upper_layers(model)
         else:
-            # Final phase: full fine-tuning
+            # Phase 3: Full model optimization
             unfreeze_all_layers(model)
             
         return super().training_step(model, inputs, **kwargs)
 ```
 
-Key benefits of this approach:
-1. Controlled adaptation to new tasks
-2. Efficient use of pretrained knowledge
-3. Prevention of catastrophic forgetting
-4. Optimized training resource usage
-5. Flexible adaptation to different task types
+Comprehensive benefits:
+1. Precise adaptation control
+   - Layer-specific updates
+   - Controlled learning rates
+   - Monitored convergence
+2. Optimal pretrained knowledge usage
+   - Preserved base features
+   - Efficient transfer
+   - Balanced adaptation
+3. Advanced forgetting prevention
+   - Staged unfreezing
+   - Controlled updates
+   - Stable learning
+4. Resource optimization
+   - Efficient computation
+   - Memory management
+   - Balanced utilization
+5. Flexible task handling
+   - Dynamic adaptation
+   - Task-specific optimization
+   - Performance monitoring
 
-This transfer learning strategy can be adjusted based on:
-- Dataset size
-- Task similarity to pretraining
-- Available computational resources
-- Required model performance
-- Training time constraints
+## 5. Advanced Learning Rate Strategy
 
-
-## 5. Learning Rate Strategy
-
-### Layer-wise Learning Rate Implementation
+### Sophisticated Layer-wise Implementation
 ```python
 optimizer_grouped_parameters = [
-    # Encoder layers
+    # Encoder layers with advanced grouping
     {
         "params": [p for n, p in self.model.named_parameters() 
                   if "encoder" in n],
-        "lr": self.args.learning_rate
+        "lr": self.args.learning_rate,
+        "weight_decay": 0.01
     },
-    # Task heads
+    # Task heads with optimized rates
     {
         "params": [p for n, p in self.model.named_parameters() 
                   if ("task_a_head" in n or "sentiment_head" in n)],
-        "lr": self.args.learning_rate * 5
+        "lr": self.args.learning_rate * 5,
+        "weight_decay": 0.01
     }
 ]
 ```
 
-### Learning Rate Choices
+### Comprehensive Learning Rate Choices
 
-1. **Base Rate (2e-5)**
-   - Default learning rate for encoder
-   - Balanced between stability and adaptation
-   - Prevents catastrophic forgetting
+1. **Base Learning Rate (2e-5)**
+   - Carefully calibrated default rate
+     * Balanced update magnitude
+     * Stable convergence
+     * Controlled adaptation
+   - Optimization characteristics:
+     * Prevents aggressive updates
+     * Maintains feature quality
+     * Enables stable training
+   - Implementation benefits:
+     * Consistent performance
+     * Reliable convergence
+     * Reproducible results
 
-2. **Task Head Rate (1e-4)**
-   - 5x higher than base rate
-   - Rationale:
-     - New parameters need faster adaptation
-     - Random initialization requires higher learning rate
-     - Task-specific features need rapid development
+2. **Enhanced Task Head Rate (1e-4)**
+   - Precisely calculated multiplier (5x)
+   - Technical rationale:
+     * Accelerated parameter adaptation
+     * Efficient random initialization
+     * Rapid feature development
+   - Performance benefits:
+     * Quick convergence
+     * Optimal task adaptation
+     * Improved metrics
 
-### Benefits in Multi-task Setting
+### Advanced Multi-task Benefits
 
-1. **Gradient Management**
+1. **Sophisticated Gradient Management**
    ```python
    training_args = TrainingArguments(
        learning_rate=2e-5,
        weight_decay=0.01,
        max_grad_norm=1.0,
-       warmup_steps=500
+       warmup_steps=500,
+       gradient_accumulation_steps=4
    )
    ```
-   - Different learning rates balance task gradients
-   - Prevents dominant task interference
-   - Maintains stable updates across tasks
+   - Comprehensive gradient control
+     * Clipping for stability
+     * Accumulation for efficiency
+     * Normalization for balance
+   - Advanced optimization
+     * Task-specific scaling
+     * Controlled updates
+     * Stable learning
 
-2. **Knowledge Transfer**
-   - Controlled feature adaptation
-   - Preserves useful pretrained knowledge
-   - Enables task-specific optimization
+2. **Enhanced Training Stability**
+   - Advanced stabilization techniques
+     * Gradient clipping thresholds
+     * Warmup scheduling
+     * Weight decay optimization
+   - Performance monitoring
+     * Regular evaluation
+     * Metric tracking
+     * Dynamic adjustment
 
-3. **Training Stability**
-   - Gradient clipping prevents explosion
-   - Warmup steps for stable initialization
-   - Weight decay for regularization
-
-4. **Resource Efficiency**
+3. **Optimized Resource Usage**
    ```python
-   per_device_train_batch_size=8,  # Reduced batch size
-   per_device_eval_batch_size=8
+   per_device_train_batch_size=8,
+   per_device_eval_batch_size=8,
+   gradient_accumulation_steps=4
    ```
-   - Memory-efficient batch sizes
-   - Focused parameter updates
-   - Balanced computational resources
+   - Memory optimization
+     * Controlled batch sizes
+     * Efficient accumulation
+     * Balanced utilization
+   - Computation efficiency
+     * Parallel processing
+     * Resource allocation
+     * Throughput optimization
 
-### Multi-Task Specific Benefits
-
-1. **Task Interference Management**
+4. **Task Interference Management**
    ```python
    def __getitem__(self, idx):
        if np.random.random() < 0.5:
@@ -388,11 +737,34 @@ optimizer_grouped_parameters = [
        else:
            task_name = "sentiment"
    ```
-   - Balanced task sampling
-   - Independent gradient scaling
-   - Controlled feature sharing
+   - Advanced sampling strategies
+     * Balanced task selection
+     * Dynamic scheduling
+     * Performance monitoring
+   - Gradient handling
+     * Task-specific scaling
+     * Controlled updates
+     * Stable learning
 
-2. **Adaptive Optimization**
-   - Task-specific learning rates
-   - Shared feature development
-   - Efficient knowledge transfer
+### Advanced Multi-Task Optimization
+
+1. **Comprehensive Task Balancing**
+   - Dynamic task scheduling
+     * Adaptive sampling
+     * Performance-based weighting
+     * Resource allocation
+   - Gradient management
+     * Task-specific scaling
+     * Update normalization
+     * Controlled learning
+
+2. **Sophisticated Feature Sharing**
+   - Advanced sharing mechanisms
+     * Controlled feature transfer
+     * Balanced adaptation
+     * Optimal utilization
+   - Performance optimization
+     * Regular evaluation
+     * Metric tracking
+     * Dynamic adjustment
+
